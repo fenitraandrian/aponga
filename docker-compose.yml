@@ -1,0 +1,27 @@
+services:
+  dev:
+    build:
+      context: ./aponga_vue
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./aponga_vue:/app
+      - /app/node_modules
+
+  back:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./back-end/.env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@host.docker.internal:5432/aponga
+      FRONT_URL: http://localhost:5173
+    volumes:
+      - ./back-end:/app
+      - /app/node_modules
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

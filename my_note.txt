@@ -1,0 +1,36 @@
+
+  Pour l’organisation au fil du projet, 
+  ajoute ensuite des dossiers dans src/ 
+  : routes/ (les URL),
+   controllers/ (la logique), 
+   config/ (connexion à la base de données)
+
+Dans docker-compose.yml, un volume relie un dossier de ta machine à un dossier du conteneur. La syntaxe est CHEMIN_SUR_TON_PC:CHEMIN_DANS_LE_CONTENEUR.
+
+Dans fetch, credentials indique au navigateur s’il doit envoyer et accepter les cookies.
+
+a chaque modification du back-end: il faut redemarrer le back:
+docker compose restart back
+
+pour resoudre des problemes de dependances introuvables.
+docker compose up --build
+
+quand tu veux voir les logs: c'est dans le docker (dans le conteneur) qu'on regarde le log , car c'est la bas qu'elles sont demarree: 
+
+Pour gérer ces URL, on ajoute vue-router, la bibliothèque officielle de routage de Vue..., il faut reconstruire l’image Docker après l’installation.
+
+Le code 403 signifie « je sais qui tu es, mais tu n’as pas le droit »
+
+Nodemon ne détecte pas toujours les changements dans Docker. Redémarre le back :
+c quoi Nodemon exactement stp ?!
+docker compose restart back
+
+middleware:
+
+etude (formation)            ← ce que l'on suit : "Batterie débutant"
+ └─ etude (unité)            ← une partie de la formation : "Rudiments"
+     ├─ version_etude        ← une version de l'unité (titre, description, publication)
+     │    └─ version_etude_activite  ← la composition : quelles activités, dans quel ordre, obligatoires ou non
+     └─ definition_activite  ← le cours : "Rudiment 1", rattaché à une unité
+          └─ version_activite  ← une version du cours : contenu, durée, publication
+               └─ ressource   ← les liens ou fichiers de cette version
