@@ -31,6 +31,21 @@ const router = createRouter({
     {path: '/apprenants/:id/modifier',name: 'apprenant-modifier',component: () => import('../views/apprenants/ApprenantFormulaireView.vue'),},
 
     {path: '/planning',name: 'planning',component: () => import('../views/seances/PlanningView.vue'),},
+
+    {path: '/unites/:id/contenus',name: 'unite-contenus',component: () => import('../views/contenus/ContenusUniteView.vue'),},
+
+    {path: '/enseignants',name: 'enseignants',component: () => import('../views/enseignants/EnseignantsView.vue'),},
+    {path: '/enseignants/:id',name: 'enseignant-detail',component: () => import('../views/enseignants/EnseignantDetailView.vue'),},
+    {path: '/enseignants/:id/modifier',name: 'enseignant-modifier',component: () => import('../views/enseignants/EnseignantFormulaireView.vue'),},
+
+    {path: '/seances/:id',name: 'seance-detail',component: () => import('../views/seances/SeanceDetailView.vue'),},
+
+    {path: '/mes-seances',name: 'mes-seances',component: () => import('../views/mesInscriptions/MesSeancesView.vue'),},
+
+    // début (suivi de cours, T14)
+    {path: '/mes-seances/:id/contenus',name: 'mes-contenus-seance',component: () => import('../views/mesInscriptions/ContenusSeanceView.vue'),},
+    {path: '/seances/:id/presences',name: 'presences-seance',component: () => import('../views/seances/PresencesSeanceView.vue'),},
+    {path: '/admin/telechargements',name: 'telechargements',component: () => import('../views/admin/TelechargementsView.vue'),},
   ],
 })
 

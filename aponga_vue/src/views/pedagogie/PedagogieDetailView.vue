@@ -14,10 +14,17 @@
         <p v-if="etude.description" class="description">{{ etude.description }}</p>
       </div>
       <ActivitesUnite
-        v-if="etude && etude.type_etude === 'unite'"
-        :id-etude="etude.id"
-        :peut-gerer="peutGerer"
+      v-if="etude && etude.type_etude === 'unite'"
+      :id-etude="etude.id"
+      :peut-gerer="peutGerer"
       />
+      <RouterLink
+        v-if="etude && etude.type_etude === 'unite'"
+        :to="`/unites/${etude.id}/contenus`"
+        class="lien-secondaire"
+      >
+        Contenus de l'unité
+      </RouterLink>
       <section class="versions">
         <div class="entete">
           <h2>Versions</h2>

@@ -75,12 +75,22 @@ async function verifierChevauchement(client, idEnseignant, dateDebut, dureeMinut
   }
 }
 
+// Règle métier : l'enseignant doit être affecté à l'unité de la séance
+async function verifierAffectation(client, idEnseignant, idEtude) {
+  const { rows } = await client.query(
+    'SELECT 1 FROM affectation_enseignant WHERE id_membre = $1 AND id_etude = $2 AND date_fin IS NULL',
+    [idEnseignant, idEtude]
+  )
+  if (!rows[0]) throw new ErreurMetier(400, "Cet enseignant n'est pas affecté à cette unité.")
+}
+
 export async function creerSeance(corps) {
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
     await verifierUnite(client, corps.id_etude)
     await verifierEnseignant(client, corps.id_enseignant)
+    await verifierAffectation(client, corps.id_enseignant, corps.id_etude)
     await verifierChevauchement(client, corps.id_enseignant, corps.date_debut, corps.duree_minutes, null)
 
     const { rows } = await client.query(
@@ -111,6 +121,7 @@ export async function modifierSeance(id, corps) {
     }
     await verifierUnite(client, corps.id_etude)
     await verifierEnseignant(client, corps.id_enseignant)
+    await verifierAffectation(client, corps.id_enseignant, corps.id_etude)
     await verifierChevauchement(client, corps.id_enseignant, corps.date_debut, corps.duree_minutes, id)
 
     await client.query(

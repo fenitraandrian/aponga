@@ -28,6 +28,10 @@
           <strong>{{ formaterDate(seance.date_debut) }}</strong>
           ({{ seance.duree_minutes }} min)<br />
           {{ seance.unite }} : {{ seance.enseignant_prenom }} {{ seance.enseignant_nom }}
+          <br>
+          <RouterLink :to="`/seances/${seance.id}`">Inscriptions</RouterLink>
+          <br>
+          <RouterLink :to="`/seances/${seance.id}/presences`">Présences</RouterLink>
         </div>
         <span v-if="peutGerer" class="actions">
           <button type="button" @click="modifier(seance)">Modifier</button>
