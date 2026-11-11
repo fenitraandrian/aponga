@@ -34,3 +34,10 @@ etude (formation)            ← ce que l'on suit : "Batterie débutant"
      └─ definition_activite  ← le cours : "Rudiment 1", rattaché à une unité
           └─ version_activite  ← une version du cours : contenu, durée, publication
                └─ ressource   ← les liens ou fichiers de cette version
+-----------------------
+mijery fiche de stage 
+-----------
+est-ce que je comprends bien le fonctionnement de chaque fonctionnalite et 
+de chque flux ?
+-->> beaucoup de test, na koa asaina testern'i Finaritra kely rehefa le akaiky ho vita iny ny cotee apprenant,d mora ahitana 
+hoe mora ampiasaina sa tsia .
