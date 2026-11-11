@@ -19,3 +19,14 @@ relancer:
 sady m-copier -colle no moiteny hoe : 
 verification role
 assignation role.
+
+rehefa manao npm install d tratran'ito:
+nodemon affiche « app crashed
+>solution:
+Installe le paquet dans le conteneur : et non dans la machine
+docker exec aponga_from_scratch-back-1 npm install multer
+
+si le conteneur s'arrete :
+docker start aponga_from_scratch-back-1
+docker exec aponga_from_scratch-back-1 npm install multer
+docker restart aponga_from_scratch-back-1

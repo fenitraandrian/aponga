@@ -18,6 +18,8 @@ export function repondreErreur(res, err) {
       utilisateur_email_key: 'Un utilisateur avec cet email existe déjà.',
       utilisateur_telephone_key: 'Un utilisateur avec ce téléphone existe déjà.',
       uq_affectation_active: 'Cet apprenant a déjà une affectation active.',
+      uq_affectation_enseignant_active: 'Cet enseignant est déjà affecté à cette unité.',
+      uq_inscription_seance_membre: 'Cet apprenant est déjà inscrit à cette séance.',
     }
     return res.status(409).json({ message: messages[err.constraint] ?? 'Cet élément existe déjà.' })
   }

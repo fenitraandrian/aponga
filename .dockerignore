@@ -1,0 +1,13 @@
+# Notes internes, non nécessaires au conteneur
+*.md
+*.txt
+!README.md
+
+# Secrets : jamais dans une image
+.env
+.env.*
+
+# Dépendances et fichiers générés, réinstallés dans le conteneur
+**/node_modules
+**/dist
+**/uploads
