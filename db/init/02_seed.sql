@@ -20,6 +20,9 @@ SET row_security = off;
 -- Data for Name: permission; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO public.organisation (id, nom, type, statut, created_at, updated_at) VALUES (1, 'aponga', 'test', 'active', '2026-10-19 08:26:34.807335', '2026-10-19 08:26:34.807335');
+
+
 INSERT INTO public.permission (id, code, description) VALUES (1, 'profil.consulter', 'Voir son propre profil');
 INSERT INTO public.permission (id, code, description) VALUES (2, 'utilisateurs.lire', 'Voir la liste des utilisateurs et leurs r“les');
 INSERT INTO public.permission (id, code, description) VALUES (3, 'utilisateurs.modifier', 'Modifier les informations des utilisateurs');
