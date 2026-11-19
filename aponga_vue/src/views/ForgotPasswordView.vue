@@ -1,6 +1,7 @@
 <template>
   <main class="page-formulaire">
     <section class="carte">
+      <BoutonRetour to="/essai" />
       <header>
         <h1>APONGA</h1>
         <p class="sous-titre">Mot de passe oublié</p>
@@ -36,6 +37,7 @@
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { motDePasseOublie } from '../services/api.js'
+import BoutonRetour from '../components/BoutonRetour.vue'
 
 const email = ref('')
 const chargement = ref(false)

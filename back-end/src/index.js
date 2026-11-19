@@ -19,6 +19,9 @@ import mesInscriptionsRouter from './routes/mesInscriptions.js'
 import presencesRouter from './routes/presences.js'
 import mesContenusRouter from './routes/mesContenus.js'
 import reglesTelechargementRouter from './routes/reglesTelechargement.js'
+import essaiRouter from './routes/essai.js'
+import exercicesRouter from './routes/exercices.js'
+import soldesRouter from './routes/soldes.js'
 
 const app = express()
 
@@ -48,6 +51,10 @@ app.use('/api/mes-inscriptions', mesInscriptionsRouter)
 app.use('/api/presences', presencesRouter)
 app.use('/api/mes-contenus', mesContenusRouter)
 app.use('/api/regles-telechargement', reglesTelechargementRouter)
+app.use('/api', exercicesRouter)
+app.use('/api/essai', essaiRouter)
+app.use('/api/soldes', soldesRouter)
+
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {

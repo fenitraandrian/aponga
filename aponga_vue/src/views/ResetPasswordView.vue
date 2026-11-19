@@ -1,6 +1,7 @@
 <template>
   <main class="page-formulaire">
     <section class="carte">
+      <BoutonRetour to="/essai" />
       <header>
         <h1>APONGA</h1>
         <p class="sous-titre">Nouveau mot de passe</p>
@@ -60,6 +61,7 @@
 import { ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { reinitialiser } from '../services/api.js'
+import BoutonRetour from '../components/BoutonRetour.vue'
 
 // Le jeton vient de l'URL : /reinitialiser?jeton=...
 const route = useRoute()

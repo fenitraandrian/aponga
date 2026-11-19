@@ -17,3 +17,21 @@ export function autoriser(...permissionsRequises) {
     }
   }
 }
+
+// Usage : autoriserUne('exercices.gerer', 'exercices.soumettre'). Il suffit d'avoir l'une des permissions.
+export function autoriserUne(...permissionsAcceptees) {
+  return async (req, res, next) => {
+    try {
+      const permissions = await permissionsDeLUtilisateur(req.utilisateur.id)
+      const autorise = permissionsAcceptees.some((p) => permissions.includes(p))
+
+      if (!autorise) {
+        return res.status(403).json({ message: 'Accès refusé.' })
+      }
+      next()
+    } catch (err) {
+      console.error(err)
+      res.status(500).json({ message: 'Erreur serveur, veuillez réessayer.' })
+    }
+  }
+}

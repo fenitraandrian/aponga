@@ -218,3 +218,70 @@ export const listerReglesTelechargement = () =>
 export const modifierRegleTelechargement = (typeFichier, telechargeable) =>
   appeler(`/api/regles-telechargement/${typeFichier}`, { methode: 'PUT', corps: { telechargeable } })
 // MODIFICATION : fin
+
+export const listerParcoursEssai = () =>
+  appeler('/api/essai/parcours', { methode: 'GET' })
+
+export const unitesParcoursEssai = (code) =>
+  appeler(`/api/essai/parcours/${code}/unites`, { methode: 'GET' })
+
+export const corrigerQuizEssai = (idUnite, reponses) =>
+  appeler(`/api/essai/unites/${idUnite}/corriger`, { corps: { reponses } })
+
+// début (exercices, T15 à T17)
+export const listerConsignesSeance = (idSeance) =>
+  appeler(`/api/seances/${idSeance}/consignes`, { methode: 'GET' })
+
+export const creerConsigneSeance = (idSeance, corps) =>
+  appeler(`/api/seances/${idSeance}/consignes`, { corps })
+
+// Dépôt de fichiers : multipart, donc pas de appeler()
+export async function deposerExercice(idConsigne, fichiers) {
+  const donnees = new FormData()
+  for (const fichier of fichiers) donnees.append('fichiers', fichier)
+
+  let reponse
+  try {
+    reponse = await fetch(`${URL_BASE}/api/consignes/${idConsigne}/depots`, {
+      method: 'POST',
+      credentials: 'include',
+      body: donnees,
+    })
+  } catch {
+    throw new Error('Impossible de joindre le serveur.')
+  }
+
+  const json = await reponse.json().catch(() => ({}))
+  if (!reponse.ok) throw new Error(json.message ?? 'Dépôt impossible.')
+  return json
+}
+
+export const listerMesExercices = (niveau, statut) => {
+  const params = new URLSearchParams()
+  if (niveau) params.set('niveau', niveau)
+  if (statut) params.set('statut', statut)
+  const suffixe = params.toString() ? `?${params.toString()}` : ''
+  return appeler(`/api/mes-exercices${suffixe}`, { methode: 'GET' })
+}
+
+export const listerDepots = (statut = 'soumis') =>
+  appeler(`/api/depots?statut=${statut}`, { methode: 'GET' })
+
+export const validerDepot = (idDepot, corps) =>
+  appeler(`/api/depots/${idDepot}/validation`, { methode: 'PUT', corps })
+
+export const urlTelechargementFichierDepot = (idFichier) =>
+  `${URL_BASE}/api/depots/fichiers/${idFichier}/telecharger`
+// MODIFICATION : fin
+
+//  (soldes de séances)
+export const listerSoldes = () => appeler('/api/soldes', { methode: 'GET' })
+
+export const creerSolde = (corps) => appeler('/api/soldes', { corps })
+
+export const modifierSolde = (idMembre, idNiveau, solde) =>
+  appeler(`/api/soldes/${idMembre}/${idNiveau}`, { methode: 'PUT', corps: { solde } })
+
+export const supprimerSolde = (idMembre, idNiveau) =>
+  appeler(`/api/soldes/${idMembre}/${idNiveau}`, { methode: 'DELETE' })
+// MODIFICATION : fin

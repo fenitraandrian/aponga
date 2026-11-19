@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { connexion } from '../services/api.js'
+import BoutonRetour from '../components/BoutonRetour.vue'
 
 // MODIFICATION : début (le routeur remplace l'événement envoyé au parent)
 const router = useRouter()
@@ -39,6 +40,7 @@ async function seConnecter() {
 <template>
   <main class="page-formulaire">
     <section class="carte">
+      <BoutonRetour to="/essai" />
       <header>
         <h1>APONGA</h1>
         <p class="sous-titre">Connexion à votre espace</p>
