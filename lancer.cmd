@@ -14,3 +14,6 @@ docker compose restart dev
 
 @REM  rehefa manova back ()
 docker compose restart back 
+
+@REM  pour acceder a la base sur docker
+docker exec -it aponga_from_scratch-db-1 psql -U postgres -d aponga  

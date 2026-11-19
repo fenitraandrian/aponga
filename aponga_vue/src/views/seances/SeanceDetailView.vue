@@ -1,6 +1,6 @@
 <template>
   <BarreNavigation />
-  
+
   <main class="page">
     <p v-if="chargement">Chargement…</p>
     <p v-else-if="erreur && !seance" class="erreur">{{ erreur }}</p>
@@ -32,6 +32,8 @@
         </ul>
       </section>
 
+      <RouterLink :to="`/seances/${seance.id}/exercices`">Exercices de la séance</RouterLink>
+      
       <section v-if="peutGerer && aVenir && !complete">
         <h2>Inscrire un apprenant</h2>
         <input v-model="recherche" placeholder="Rechercher un apprenant" />

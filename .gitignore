@@ -4,3 +4,4 @@ login_of_users.md
 *.txt
 dump/
 .env
+back-end/uploads/

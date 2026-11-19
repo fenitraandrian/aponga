@@ -1,6 +1,7 @@
 <template>
   <main class="page-formulaire">
     <section class="carte">
+      <BoutonRetour to="/essai" />
       <header>
         <h1>APONGA</h1>
         <p class="sous-titre">Créer un compte</p>
@@ -90,6 +91,7 @@
 <script setup>
 import { ref } from 'vue'
 import { inscription } from '../services/api.js'
+import BoutonRetour from '../components/BoutonRetour.vue'
 
 const vide = () => ({ nom: '', prenom: '', email: '', telephone: '', motDePasse: '', confirmation: '' })
 const formulaire = ref(vide())

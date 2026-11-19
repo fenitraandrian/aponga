@@ -8,7 +8,7 @@ import HomeView from '../views/HomeView.vue'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', redirect: '/connexion' },
+    { path: '/', redirect: '/essai' },
     { path: '/connexion', name: 'connexion', component: LoginView },
     { path: '/inscription', name: 'inscription', component: RegisterView },
     { path: '/mot-de-passe-oublie', name: 'mot-de-passe-oublie', component: ForgotPasswordView },
@@ -46,6 +46,18 @@ const router = createRouter({
     {path: '/mes-seances/:id/contenus',name: 'mes-contenus-seance',component: () => import('../views/mesInscriptions/ContenusSeanceView.vue'),},
     {path: '/seances/:id/presences',name: 'presences-seance',component: () => import('../views/seances/PresencesSeanceView.vue'),},
     {path: '/admin/telechargements',name: 'telechargements',component: () => import('../views/admin/TelechargementsView.vue'),},
+      //début (essai gratuit, public)
+    { path: '/essai', name: 'essai', component: () => import('../views/essai/EssaiAccueilView.vue') },
+    { path: '/essai/niveau', name: 'essai-niveau', component: () => import('../views/essai/EssaiNiveauView.vue') },
+    { path: '/essai/parcours/:code', name: 'essai-parcours', component: () => import('../views/essai/EssaiParcoursView.vue') },
+
+    { path: '/seances/:id/exercices', name: 'seance-exercices', component: () => import('../views/exercices/ConsignesSeanceView.vue') },
+    { path: '/mes-exercices', name: 'mes-exercices', component: () => import('../views/exercices/MesExercicesView.vue') },
+    { path: '/exercices/a-valider', name: 'exercices-a-valider', component: () => import('../views/exercices/ValidationExercicesView.vue') },
+
+    { path: '/inscriptions-seances', name: 'inscriptions-seances', component: () => import('../views/inscriptions/InscriptionsSeancesView.vue') },
+    { path: '/admin/soldes', name: 'admin-soldes', component: () => import('../views/admin/SoldesView.vue') },
+    
   ],
 })
 
