@@ -407,3 +407,95 @@ CREATE TABLE seance (
 -- Pour le planning d'un enseignant et le contrôle des chevauchements
 CREATE INDEX idx_seance_enseignant_date ON seance (id_enseignant, date_debut);
 CREATE INDEX idx_seance_etude ON seance (id_etude);
+
+-- Conteneur de contenu : un ensemble de fichiers rattaché à une unité, et optionnellement à une séance
+CREATE TABLE conteneur_contenu (
+  id          SERIAL PRIMARY KEY,
+  id_etude    INTEGER NOT NULL REFERENCES etude(id) ON DELETE RESTRICT,
+  id_seance   INTEGER REFERENCES seance(id) ON DELETE RESTRICT,
+  titre       VARCHAR(200) NOT NULL,
+  description TEXT,
+  cree_par    INTEGER REFERENCES membre(id) ON DELETE RESTRICT,
+  cree_le     TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_conteneur_etude ON conteneur_contenu (id_etude);
+CREATE INDEX idx_conteneur_seance ON conteneur_contenu (id_seance);
+
+-- Fichier téléversé : seul le nom aléatoire est utilisé sur le disque
+CREATE TABLE fichier (
+  id             SERIAL PRIMARY KEY,
+  id_conteneur   INTEGER NOT NULL REFERENCES conteneur_contenu(id) ON DELETE CASCADE,
+  nom_original   VARCHAR(255) NOT NULL,
+  nom_stocke     VARCHAR(64) NOT NULL UNIQUE,
+  type_mime      VARCHAR(100) NOT NULL,
+  type_media     VARCHAR(20) NOT NULL CHECK (type_media IN ('pdf', 'image', 'audio', 'video')),
+  taille_octets  BIGINT NOT NULL CHECK (taille_octets > 0),
+  cree_le        TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_fichier_conteneur ON fichier (id_conteneur);
+
+-- Affectation d'un enseignant à une unité. Active tant que date_fin est vide.
+CREATE TABLE affectation_enseignant (
+  id          SERIAL PRIMARY KEY,
+  id_membre   INTEGER NOT NULL REFERENCES membre(id) ON DELETE RESTRICT,
+  id_etude    INTEGER NOT NULL REFERENCES etude(id) ON DELETE RESTRICT,
+  date_debut  DATE NOT NULL DEFAULT CURRENT_DATE,
+  date_fin    DATE,
+  cree_le     TIMESTAMP NOT NULL DEFAULT NOW(),
+  CONSTRAINT chk_affectation_enseignant_dates CHECK (date_fin IS NULL OR date_fin >= date_debut)
+);
+
+-- Un enseignant n'est affecté qu'une fois à la fois à une même unité
+CREATE UNIQUE INDEX uq_affectation_enseignant_active
+  ON affectation_enseignant (id_membre, id_etude)
+  WHERE date_fin IS NULL;
+
+CREATE INDEX idx_affectation_enseignant_etude ON affectation_enseignant (id_etude);
+
+-- Capacité optionnelle d'une séance (vide = pas de limite)
+ALTER TABLE seance ADD COLUMN capacite INTEGER;
+ALTER TABLE seance ADD CONSTRAINT chk_seance_capacite CHECK (capacite IS NULL OR capacite > 0);
+
+-- Un apprenant inscrit à une séance. Une seule inscription par couple (séance, apprenant).
+CREATE TABLE inscription_seance (
+  id               SERIAL PRIMARY KEY,
+  id_seance        INTEGER NOT NULL REFERENCES seance(id) ON DELETE CASCADE,
+  id_membre        INTEGER NOT NULL REFERENCES membre(id) ON DELETE RESTRICT,
+  inscrit_par      INTEGER NOT NULL REFERENCES membre(id) ON DELETE RESTRICT,
+  date_inscription TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT uq_inscription_seance_membre UNIQUE (id_seance, id_membre)
+);
+
+CREATE INDEX idx_inscription_seance_membre ON inscription_seance (id_membre);
+
+-- Solde de séances par apprenant et par niveau (rempli plus tard par le module paiement, T20)
+CREATE TABLE solde_seance (
+  id_membre INTEGER NOT NULL REFERENCES membre(id) ON DELETE RESTRICT,
+  id_niveau INTEGER NOT NULL REFERENCES niveau(id) ON DELETE RESTRICT,
+  nombre    INTEGER NOT NULL DEFAULT 0 CHECK (nombre >= 0),
+  PRIMARY KEY (id_membre, id_niveau)
+);
+
+-- Niveau décompté lors de l'inscription (sert à rembourser le solde à la désinscription)
+ALTER TABLE inscription_seance ADD COLUMN id_niveau INTEGER REFERENCES niveau(id) ON DELETE RESTRICT;
+
+-- Présence d'un apprenant inscrit à une séance (présent ou absent)
+CREATE TABLE presence_seance (
+  id_seance     INTEGER NOT NULL,
+  id_membre     INTEGER NOT NULL,
+  present       BOOLEAN NOT NULL,
+  marque_par    INTEGER NOT NULL REFERENCES membre(id) ON DELETE RESTRICT,
+  date_marquage TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id_seance, id_membre),
+  CONSTRAINT fk_presence_inscription FOREIGN KEY (id_seance, id_membre)
+    REFERENCES inscription_seance (id_seance, id_membre) ON DELETE CASCADE
+);
+
+CREATE TABLE regle_telechargement (
+  type_fichier   VARCHAR(20) PRIMARY KEY
+                 CHECK (type_fichier IN ('pdf', 'image', 'audio', 'video')),
+  telechargeable BOOLEAN NOT NULL DEFAULT FALSE
+);
+

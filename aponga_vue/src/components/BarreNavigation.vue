@@ -10,6 +10,9 @@
       <RouterLink v-if="permissions.includes('pedagogie.lire')" to="/niveaux">Niveaux</RouterLink>
       <RouterLink v-if="permissions.includes('apprenants.lire')" to="/apprenants">Apprenants</RouterLink>
       <RouterLink v-if="permissions.includes('seances.lire')" to="/planning">Planning</RouterLink>
+      <RouterLink v-if="permissions.includes('enseignants.lire')" to="/enseignants">Enseignants</RouterLink>
+      <RouterLink v-if="permissions.includes('inscriptions.soi')" to="/mes-seances">Mes séances</RouterLink>
+      <RouterLink v-if="permissions.includes('telechargements.gerer')" to="/admin/telechargements">Téléchargements</RouterLink>
     </nav>
 
     <div class="session">
