@@ -128,6 +128,7 @@ async function annuler(idSeance) {
               <div>{{ i.titre_unite }}</div>
             </div>
             <div class="action">
+              <RouterLink :to="`/seances/${i.id}/exercices`">Exercices</RouterLink>
               <button type="button" @click="annuler(i.id)">Annuler</button>
             </div>
           </li>
@@ -142,6 +143,7 @@ async function annuler(idSeance) {
               {{ formaterDateHeure(i.date_debut) }}, {{ i.titre_unite }}
             </div>
             <!-- (suivi de cours, T14) -->
+            <RouterLink :to="`/seances/${i.id}/exercices`">Exercices</RouterLink>
             <RouterLink :to="`/mes-seances/${i.id}/contenus`">Contenus</RouterLink>
           </li>
         </ul>

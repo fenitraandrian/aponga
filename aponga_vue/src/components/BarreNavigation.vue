@@ -13,6 +13,10 @@
       <RouterLink v-if="permissions.includes('enseignants.lire')" to="/enseignants">Enseignants</RouterLink>
       <RouterLink v-if="permissions.includes('inscriptions.soi')" to="/mes-seances">Mes séances</RouterLink>
       <RouterLink v-if="permissions.includes('telechargements.gerer')" to="/admin/telechargements">Téléchargements</RouterLink>
+      <RouterLink v-if="permissions.includes('exercices.soumettre')" to="/mes-exercices">Mes exercices</RouterLink>
+      <RouterLink v-if="permissions.includes('exercices.gerer')" to="/exercices/a-valider">Exercices à valider</RouterLink>
+      <RouterLink v-if="permissions.includes('inscriptions.lire')" to="/inscriptions-seances">Apprenants par séance</RouterLink>
+      <RouterLink v-if="permissions.includes('soldes.gerer')" to="/admin/soldes">Soldes</RouterLink>
     </nav>
 
     <div class="session">
@@ -60,6 +64,10 @@ async function seDeconnecter() {
 
 <style scoped>
 .barre-navigation {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #bbdbbc;
   display: flex;
   align-items: center;
   justify-content: space-between;
