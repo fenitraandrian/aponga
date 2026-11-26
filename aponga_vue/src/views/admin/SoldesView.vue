@@ -48,6 +48,7 @@
             <th>Apprenant</th>
             <th>Niveau</th>
             <th>Séances</th>
+            <th>Reste (Ar)</th>
             <th></th>
           </tr>
         </thead>
@@ -64,6 +65,7 @@
                 :aria-label="`Solde de ${s.prenom} ${s.nom}`"
               />
             </td>
+            <td>{{ s.reste }}</td>
             <td class="actions">
               <button
                 type="button"

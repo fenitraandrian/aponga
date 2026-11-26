@@ -499,3 +499,162 @@ CREATE TABLE regle_telechargement (
   telechargeable BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+-- Parcours d'essai gratuit : public, indépendant des unités de l'école
+
+CREATE TABLE essai_parcours (
+  code            VARCHAR(30) PRIMARY KEY,
+  libelle         VARCHAR(100) NOT NULL,
+  position_depart INTEGER NOT NULL CHECK (position_depart > 0)
+);
+
+CREATE TABLE essai_unite (
+  id        SERIAL PRIMARY KEY,
+  position  INTEGER NOT NULL UNIQUE CHECK (position > 0),
+  titre     VARCHAR(200) NOT NULL,
+  objectifs TEXT
+);
+
+CREATE TABLE essai_section (
+  id        SERIAL PRIMARY KEY,
+  id_unite  INTEGER NOT NULL REFERENCES essai_unite(id) ON DELETE CASCADE,
+  position  INTEGER NOT NULL,
+  titre     VARCHAR(200) NOT NULL,
+  contenu   TEXT NOT NULL,
+  CONSTRAINT uq_essai_section_position UNIQUE (id_unite, position)
+);
+
+CREATE TABLE essai_question (
+  id        SERIAL PRIMARY KEY,
+  id_unite  INTEGER NOT NULL REFERENCES essai_unite(id) ON DELETE CASCADE,
+  position  INTEGER NOT NULL,
+  enonce    TEXT NOT NULL,
+  CONSTRAINT uq_essai_question_position UNIQUE (id_unite, position)
+);
+
+CREATE TABLE essai_choix (
+  id           SERIAL PRIMARY KEY,
+  id_question  INTEGER NOT NULL REFERENCES essai_question(id) ON DELETE CASCADE,
+  position     INTEGER NOT NULL,
+  texte        VARCHAR(300) NOT NULL,
+  est_bonne    BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT uq_essai_choix_position UNIQUE (id_question, position)
+);
+
+-- Une seule bonne réponse par question
+CREATE UNIQUE INDEX uq_essai_choix_bonne ON essai_choix (id_question) WHERE est_bonne;
+
+-- Exercices : consignes par séance, dépôts versionnés par apprenant, fichiers joints
+
+CREATE TABLE consigne (
+  id           SERIAL PRIMARY KEY,
+  id_seance    INTEGER NOT NULL REFERENCES seance(id) ON DELETE CASCADE,
+  titre        VARCHAR(200) NOT NULL,
+  description  TEXT,
+  date_limite  TIMESTAMPTZ,
+  cree_le      TIMESTAMP NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_consigne_seance ON consigne (id_seance);
+
+CREATE TABLE depot (
+  id              SERIAL PRIMARY KEY,
+  id_consigne     INTEGER NOT NULL REFERENCES consigne(id) ON DELETE CASCADE,
+  id_membre       INTEGER NOT NULL REFERENCES membre(id) ON DELETE RESTRICT,
+  numero_version  INTEGER NOT NULL CHECK (numero_version > 0),
+  statut          VARCHAR(20) NOT NULL DEFAULT 'soumis'
+                  CHECK (statut IN ('soumis', 'valide', 'rejete')),
+  depose_le       TIMESTAMP NOT NULL DEFAULT NOW(),
+  note            NUMERIC(4,2) CHECK (note BETWEEN 0 AND 20),
+  commentaire     TEXT,
+  valide_par      INTEGER REFERENCES membre(id) ON DELETE RESTRICT,
+  valide_le       TIMESTAMP,
+  CONSTRAINT uq_depot_version UNIQUE (id_consigne, id_membre, numero_version),
+  CONSTRAINT ck_depot_validation CHECK (statut = 'soumis' OR valide_le IS NOT NULL)
+);
+CREATE INDEX idx_depot_membre ON depot (id_membre);
+CREATE INDEX idx_depot_statut ON depot (statut);
+
+CREATE TABLE depot_fichier (
+  id            SERIAL PRIMARY KEY,
+  id_depot      INTEGER NOT NULL REFERENCES depot(id) ON DELETE CASCADE,
+  nom_original  VARCHAR(255) NOT NULL,
+  chemin        VARCHAR(500) NOT NULL,
+  type_mime     VARCHAR(100) NOT NULL,
+  taille        INTEGER NOT NULL CHECK (taille > 0)
+);
+CREATE INDEX idx_depot_fichier_depot ON depot_fichier (id_depot);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uq_solde_membre_niveau') THEN
+    ALTER TABLE solde_seance
+      ADD CONSTRAINT uq_solde_membre_niveau UNIQUE (id_membre, id_niveau);
+  END IF;
+END $$;
+
+-- Journal d'activité : une ligne par action d'écriture réussie
+CREATE TABLE journal_activite (
+  id              SERIAL PRIMARY KEY,
+  cree_le         TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  id_utilisateur  INTEGER REFERENCES utilisateur(id) ON DELETE SET NULL,
+  methode         VARCHAR(10) NOT NULL,
+  route           VARCHAR(255) NOT NULL,
+  entite          VARCHAR(60) NOT NULL,
+  statut          INTEGER NOT NULL,
+  details         JSONB,
+  adresse_ip      VARCHAR(45)
+);
+
+CREATE INDEX idx_journal_date ON journal_activite (cree_le DESC);
+CREATE INDEX idx_journal_utilisateur ON journal_activite (id_utilisateur);
+CREATE INDEX idx_journal_entite ON journal_activite (entite);
+
+CREATE TABLE IF NOT EXISTS tarif_niveau (
+  id_niveau INTEGER PRIMARY KEY REFERENCES niveau(id) ON DELETE CASCADE,
+  prix_seance NUMERIC(12,2) NOT NULL CHECK (prix_seance > 0)
+);
+
+-- Paiements enregistrés
+CREATE TABLE IF NOT EXISTS paiement (
+  id SERIAL PRIMARY KEY,
+  id_membre INTEGER NOT NULL REFERENCES membre(id) ON DELETE CASCADE,
+  id_niveau INTEGER NOT NULL REFERENCES niveau(id),
+  montant NUMERIC(12,2) NOT NULL CHECK (montant > 0),
+  prix_seance NUMERIC(12,2) NOT NULL CHECK (prix_seance > 0),
+  nombre_seances INTEGER NOT NULL CHECK (nombre_seances >= 0),
+  reste_apres NUMERIC(12,2) NOT NULL CHECK (reste_apres >= 0),
+  enregistre_par INTEGER REFERENCES utilisateur(id) ON DELETE SET NULL,
+  cree_le TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_paiement_membre ON paiement(id_membre);
+
+-- Reste non utilisé, conservé par niveau
+ALTER TABLE solde_seance
+  ADD COLUMN IF NOT EXISTS reste NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (reste >= 0);
+
+CREATE TABLE IF NOT EXISTS type_abonnement (
+  id SERIAL PRIMARY KEY,
+  libelle VARCHAR(100) NOT NULL UNIQUE,
+  duree_jours INTEGER NOT NULL CHECK (duree_jours > 0),
+  actif BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS abonnement (
+  id SERIAL PRIMARY KEY,
+  id_membre INTEGER NOT NULL REFERENCES membre(id) ON DELETE CASCADE,
+  id_niveau INTEGER NOT NULL REFERENCES niveau(id),
+  id_type INTEGER NOT NULL REFERENCES type_abonnement(id),
+  id_paiement INTEGER REFERENCES paiement(id) ON DELETE SET NULL,
+  date_debut DATE NOT NULL,
+  date_fin DATE NOT NULL,
+  CHECK (date_fin > date_debut)
+);
+CREATE INDEX IF NOT EXISTS idx_abonnement_membre_niveau
+  ON abonnement(id_membre, id_niveau, date_fin);
+
+ALTER TABLE paiement
+  ADD COLUMN IF NOT EXISTS id_type_abonnement INTEGER REFERENCES type_abonnement(id);
+
+INSERT INTO type_abonnement (libelle, duree_jours) VALUES
+  ('Mensuel', 30),
+  ('Trimestriel', 90)
+ON CONFLICT (libelle) DO NOTHING;

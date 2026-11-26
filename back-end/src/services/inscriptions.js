@@ -1,5 +1,6 @@
 import { pool } from '../db.js'
 import { ErreurMetier } from './pedagogie.js'
+import { abonnementActif } from './abonnements.js'
 
 const SELECTION_INSCRITS = `
   SELECT i.id, i.id_membre, i.date_inscription, i.inscrit_par,
@@ -67,6 +68,11 @@ export async function inscrire(idSeance, idMembre, idAuteur) {
     if (niveauApprenant === null || niveauApprenant !== niveauUnite) {
       throw new ErreurMetier(400, "Cet apprenant n'est pas au niveau de cette unité.")
     }
+    // Abonnement : l'apprenant doit avoir un abonnement valable sur ce niveau
+    if (!(await abonnementActif(client, idMembre, niveauUnite))) {
+      throw new ErreurMetier(409, 'Abonnement expiré ou absent : renouvelez-le pour vous inscrire.')
+    }
+    
 
     // Pas de chevauchement avec une autre séance de cet apprenant
     const chevauche = await client.query(

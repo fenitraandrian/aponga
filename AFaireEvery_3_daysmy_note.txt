@@ -41,3 +41,5 @@ est-ce que je comprends bien le fonctionnement de chaque fonctionnalite et
 de chque flux ?
 -->> beaucoup de test, na koa asaina testern'i Finaritra kely rehefa le akaiky ho vita iny ny cotee apprenant,d mora ahitana 
 hoe mora ampiasaina sa tsia .
+
+-------------

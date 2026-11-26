@@ -17,3 +17,24 @@ alea possible
 ----------
 regles metiers a voir plus tard
 1-Remarque : supprimer une séance supprime ses inscriptions. Si tu préfères bloquer la suppression tant qu’il y a des inscrits, dis-le-moi.
+
+---------------
+2- faire un teste globalement sur le paiement: c'est-a-dire,, on reinitialise les donnees:
+regles de gestions:
+il peut s'inscrire meme s'il n'a pas encore payee , mais a droit a une seule seance :
+s'il veut faire une deuxieme seance, il doit payer cette fois.
+a faire :
+faire des teste : 
+
+script de reinitialisation
+script d'initialisation
+donnee de test avec les resultats attendu
+
++++++
+apprenant:
+1-un apprenant peut s'inscrire lui-meme a une seance: mais pour lui seulement et pas pour d'ajouterRessource
+2-le solde de seance doit etre automatique : 
+c'est a dire , quand il ne paie pas encore , automatiquement , apres affectation de niveau a cet apprenant, 
+son nb de seance est 2 (parametrable et non dans le dur) pour ce niveau auqeul il est inscrits
+3-a la fin, je pense qu'on devrait avoir la liste des unites pour chaque niveau 
+et ainsi que toutes les enseignants avec les unites(entre parenthese le niveau) qu'ils enseignent.

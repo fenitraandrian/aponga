@@ -22,6 +22,9 @@ import reglesTelechargementRouter from './routes/reglesTelechargement.js'
 import essaiRouter from './routes/essai.js'
 import exercicesRouter from './routes/exercices.js'
 import soldesRouter from './routes/soldes.js'
+import journalRouter from './routes/journal.js'
+import { journaliserActions } from './middlewares/journaliser.js'
+import paiementsRouter from './routes/paiements.js'
 
 const app = express()
 
@@ -29,6 +32,7 @@ const app = express()
 app.use(cors({ origin: process.env.FRONT_URL, credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
+app.use(journaliserActions)
 
 app.get('/api/health', (req, res) => {
   res.json({ statut: 'ok' })
@@ -54,6 +58,8 @@ app.use('/api/regles-telechargement', reglesTelechargementRouter)
 app.use('/api', exercicesRouter)
 app.use('/api/essai', essaiRouter)
 app.use('/api/soldes', soldesRouter)
+app.use('/api/journal', journalRouter)
+app.use('/api/paiements', paiementsRouter)
 
 
 const port = process.env.PORT || 3000

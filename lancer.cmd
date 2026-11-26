@@ -17,3 +17,10 @@ docker compose restart back
 
 @REM  pour acceder a la base sur docker
 docker exec -it aponga_from_scratch-db-1 psql -U postgres -d aponga  
+
+@REM  pour demarrer un conteneur non-demarre:
+docker compose up -d <nom_conteneur>
+
+@REM  pour executer une requette dans docker >>powershell
+Get-Content back-end\sql\migrations\021_abonnements.sql | docker compose exec -T db psql -U postgres -d aponga
+

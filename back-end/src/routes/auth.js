@@ -11,6 +11,7 @@ import {
 } from '../services/sessions.js'
 import { authentifier } from '../middlewares/authentifier.js'
 import { permissionsDeLUtilisateur ,rolesDeLUtilisateur } from '../services/permissions.js'
+import { enregistrerAction } from '../services/journal.js'
 
 const router = Router()
 
@@ -99,7 +100,23 @@ router.post('/inscription', async (req, res) => {
   }
 })
 
-// POST /api/auth/connexion : vérifie les identifiants (le jeton de session viendra à l'étape suivante)
+// MODIFICATION : début
+// Enregistre une tentative de connexion dans le journal (réussie ou refusée).
+// Le mot de passe n'est jamais journalisé.
+function journaliserConnexion(res, { idUtilisateur, statut, raison, email, ip }) {
+  res.locals.journalise = true
+  enregistrerAction({
+    idUtilisateur,
+    methode: 'POST',
+    route: '/api/auth/connexion',
+    statut,
+    details: { email, raison },
+    ip,
+  }).catch((err) => console.error('Journal d\'activité :', err))
+}
+// MODIFICATION : fin
+
+// POST /api/auth/connexion : vérifie les identifiants et ouvre une session
 router.post('/connexion', async (req, res) => {
   const email = texte(req.body?.email).toLowerCase()
   const motDePasse = req.body?.motDePasse
@@ -114,19 +131,45 @@ router.post('/connexion', async (req, res) => {
       [email]
     )
     const utilisateur = rows[0]
+    // MODIFICATION : début (utilisateur peut être undefined si l'e-mail est inconnu)
     const motDePasseValide =
-      utilisateur.mot_de_passe_hash && (await bcrypt.compare(motDePasse, utilisateur.mot_de_passe_hash))
+      utilisateur?.mot_de_passe_hash && (await bcrypt.compare(motDePasse, utilisateur.mot_de_passe_hash))
 
     if (!motDePasseValide) {
+      journaliserConnexion(res, {
+        idUtilisateur: utilisateur?.id ?? null,
+        statut: 401,
+        raison: 'identifiants incorrects',
+        email,
+        ip: req.ip,
+      })
       return res.status(401).json({ message: 'E-mail ou mot de passe incorrect.' })
     }
+    // MODIFICATION : fin
 
     if (utilisateur.statut !== 'actif') {
+      journaliserConnexion(res, {
+        idUtilisateur: utilisateur.id,
+        statut: 403,
+        raison: 'compte suspendu',
+        email,
+        ip: req.ip,
+      })
       return res.status(403).json({ message: 'Ce compte est suspendu. Contactez l\'administrateur.' })
     }
 
     const jeton = await creerSession(utilisateur.id)
     res.cookie(NOM_COOKIE, jeton, OPTIONS_COOKIE)
+
+    // MODIFICATION : début
+    journaliserConnexion(res, {
+      idUtilisateur: utilisateur.id,
+      statut: 200,
+      raison: 'connexion réussie',
+      email,
+      ip: req.ip,
+    })
+    // MODIFICATION : fin
 
     res.json({
       utilisateur: {

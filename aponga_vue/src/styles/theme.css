@@ -1,0 +1,45 @@
+/* Couleurs issues du logo APONGA */
+:root {
+  --couleur-principale: #081028;        /* bleu nuit du logo */
+  --couleur-principale-survol: #14213f;
+  --couleur-fond: #f8f8f8;              /* blanc du logo */
+  --couleur-texte: #081028;
+  --couleur-texte-doux: #5a6478;
+  --couleur-bordure: #d9dde6;
+  --couleur-succes: #1b7a34;
+  --couleur-erreur: #b00020;
+  --rayon: 8px;
+}
+
+body {
+  margin: 0;
+  background: var(--couleur-fond);
+  color: var(--couleur-texte);
+  font-family: system-ui, sans-serif;
+}
+
+a { color: var(--couleur-principale); }
+
+button {
+  background: var(--couleur-principale);
+  color: #f8f8f8;
+  border: none;
+  border-radius: var(--rayon);
+  padding: 8px 16px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { background: var(--couleur-principale-survol); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+input, select, textarea {
+  border: 1px solid var(--couleur-bordure);
+  border-radius: var(--rayon);
+  padding: 6px 10px;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--couleur-principale);
+  outline-offset: 1px;
+}
+
+.erreur { color: var(--couleur-erreur); }
+.succes { color: var(--couleur-succes); }

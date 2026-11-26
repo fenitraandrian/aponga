@@ -3,7 +3,7 @@ import { ErreurMetier } from './pedagogie.js'
 
 export async function listerSoldes() {
   const { rows } = await pool.query(
-    `SELECT s.id_membre, s.id_niveau, s.nombre AS solde,
+    `SELECT s.id_membre, s.id_niveau, s.nombre AS solde,s.reste,
             u.prenom, u.nom, n.nom AS niveau_nom, n.ordre AS niveau_ordre
        FROM solde_seance s
        JOIN membre m ON m.id = s.id_membre

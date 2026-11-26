@@ -22,7 +22,7 @@ async function appeler(chemin, { methode = 'POST', corps } = {}) {
 
 
 export const connexion = (email, motDePasse) =>
-  appeler('/api/auth/connexion', { corps: { email, motDePasse } })
+  appeler('/api/auth/connexion', {  methode: 'POST', corps: { email, motDePasse } })
 
 export const inscription = (donnees) => appeler('/api/auth/inscription', { corps: donnees })
 
@@ -285,3 +285,46 @@ export const modifierSolde = (idMembre, idNiveau, solde) =>
 export const supprimerSolde = (idMembre, idNiveau) =>
   appeler(`/api/soldes/${idMembre}/${idNiveau}`, { methode: 'DELETE' })
 // MODIFICATION : fin
+
+export const listerJournal = (params) => {
+  const parametres = new URLSearchParams(params)
+  return appeler(`/api/journal?${parametres.toString()}`, { methode: 'GET' })
+}
+
+export const listerEntitesJournal = () =>
+  appeler('/api/journal/entites', { methode: 'GET' })
+
+export function listerMembresPaiement() {
+  return appeler('/api/paiements/membres', { methode: 'GET' })
+}
+
+export function listerNiveauxTarifs() {
+  return appeler('/api/paiements/niveaux', { methode: 'GET' })
+}
+
+export function definirTarifNiveau(idNiveau, prix) {
+  return appeler(`/api/paiements/tarifs/${idNiveau}`, { methode: 'PUT', corps: { prix } })
+}
+
+export function listerPaiements(idMembre = null) {
+  const requete = idMembre ? `?membre=${idMembre}` : ''
+  return appeler(`/api/paiements${requete}`, { methode: 'GET' })
+}
+
+// export function enregistrerPaiement({ id_membre, id_niveau, montant }) {
+//   return appeler('/api/paiements', {
+//     methode: 'POST',
+//     corps: { id_membre, id_niveau, montant },
+//   })
+// }
+
+export function listerTypesAbonnement() {
+  return appeler('/api/paiements/types', { methode: 'GET' })
+}
+
+export function enregistrerPaiement({ id_membre, id_niveau, montant, id_type_abonnement }) {
+  return appeler('/api/paiements', {
+    methode: 'POST',
+    corps: { id_membre, id_niveau, montant, id_type_abonnement },
+  })
+}

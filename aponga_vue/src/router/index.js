@@ -57,7 +57,11 @@ const router = createRouter({
 
     { path: '/inscriptions-seances', name: 'inscriptions-seances', component: () => import('../views/inscriptions/InscriptionsSeancesView.vue') },
     { path: '/admin/soldes', name: 'admin-soldes', component: () => import('../views/admin/SoldesView.vue') },
-    
+
+    { path: '/admin/journal', name: 'admin-journal', component: () => import('../views/admin/JournalView.vue') },
+
+    { path: '/admin/tarifs', component: () => import('../views/admin/TarifsView.vue') },
+    { path: '/admin/paiements', component: () => import('../views/admin/PaiementsView.vue') },
   ],
 })
 
